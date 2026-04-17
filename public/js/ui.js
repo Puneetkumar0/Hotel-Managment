@@ -1,4 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Mobile menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener('click', () => {
+      menuToggle.classList.toggle('active');
+      navLinks.classList.toggle('active');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!menuToggle.contains(e.target) && !navLinks.contains(e.target)) {
+        menuToggle.classList.remove('active');
+        navLinks.classList.remove('active');
+      }
+    });
+  }
+
   const revealTargets = document.querySelectorAll('.fade-in, .stagger > *');
 
   if ('IntersectionObserver' in window) {
@@ -37,13 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  const cards = document.querySelectorAll('.feature-card, .room-card, .support-card, .menu-item, .booking-card, .quick-card');
+  const cards = document.querySelectorAll('.feature-card, .room-card, .support-card, .menu-item, .booking-card, .quick-card, .stat-item, .testimonial-card, .metric-card, .order-card');
   cards.forEach((card) => {
     card.addEventListener('mouseenter', () => {
-      card.style.transform = 'translateY(-6px)';
+      card.style.transform = 'translateY(-8px) scale(1.02)';
+      card.style.boxShadow = 'var(--shadow)';
     });
     card.addEventListener('mouseleave', () => {
       card.style.transform = '';
+      card.style.boxShadow = '';
     });
   });
 });

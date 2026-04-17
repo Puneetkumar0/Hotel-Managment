@@ -6,11 +6,81 @@
   <title>Dashboard - HotelBook</title>
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .status-badge {
+      display: inline-block;
+      padding: 0.3rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .status-pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .status-preparing {
+      background-color: #cce5ff;
+      color: #004085;
+    }
+    .status-ready {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status-delivered {
+      background-color: #d1ecf1;
+      color: #0c5460;
+    }
+    .status-cancelled {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .order-items {
+      margin: 0.5rem 0;
+    }
+    .order-item {
+      display: block;
+      color: #666;
+      margin-bottom: 0.25rem;
+    }
+    .special-instructions {
+      background-color: #f8f9fa;
+      padding: 0.5rem;
+      border-radius: 8px;
+      border-left: 3px solid #007bff;
+      font-style: italic;
+      color: #495057;
+    }
+    .order-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      border-radius: 6px;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+    }
+  </style>
 </head>
 <body class="floating-orbs">
   <div class="navbar">
     <h2>HotelBook</h2>
-    <div class="nav-links">
+    <button class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
       <a href="/"><i class="fas fa-home"></i> Home</a>
       <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
       <a href="/food/menu"><i class="fas fa-utensils"></i> Food</a>
@@ -29,17 +99,6 @@
     </header>
 
     <section class="mb-4 fade-in">
-      <h2 class="section-title">Live Room Availability</h2>
-      <p class="subtitle">Auto-updates every 30 seconds.</p>
-      <div id="roomsStatusGrid" class="rooms-grid stagger">
-        <div class="summary-card text-center" style="grid-column: 1 / -1;">
-          <i class="fas fa-spinner fa-spin"></i>
-          <p class="subtitle">Loading room statuses...</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="mb-4 fade-in">
       <h2 class="section-title">Room Service Orders</h2>
       <% if (typeof foodOrders !== 'undefined' && foodOrders.length > 0) { %>
         <div class="orders-grid stagger">
@@ -47,17 +106,32 @@
             <article class="order-card">
               <div class="admin-header mb-2">
                 <h3>Order #<%= order._id.toString().slice(-6).toUpperCase() %></h3>
-                <span class="status-badge"><%= order.status %></span>
+                <span class="status-badge status-<%= order.status %>">
+                  <%= order.status.charAt(0).toUpperCase() + order.status.slice(1).replace('-', ' ') %>
+                </span>
               </div>
-              <p class="subtitle">Room <%= order.roomNumber %> | <%= new Date(order.orderDate).toLocaleDateString() %></p>
+              <p class="subtitle">Room <%= order.roomNumber %> | <%= new Date(order.orderDate).toLocaleString() %></p>
               <p><strong>Total: &#8377;<%= order.totalPrice %></strong></p>
               <% if (order.items.length > 0) { %>
-                <p class="subtitle"><%= order.items.map(item => `${item.quantity}x ${item.name}`).join(', ') %></p>
+                <div class="order-items mb-2">
+                  <% order.items.forEach(item => { %>
+                    <small class="order-item">• <%= item.quantity %>x <%= item.name %> (&#8377;<%= item.price * item.quantity %>)</small>
+                  <% }); %>
+                </div>
               <% } %>
               <% if (order.specialInstructions) { %>
-                <p><em><%= order.specialInstructions %></em></p>
+                <p class="special-instructions"><em>"<%= order.specialInstructions %>"</em></p>
               <% } %>
-              <a href="/food/menu" class="btn btn-secondary">Order More</a>
+              <div class="order-actions">
+                <% if (order.status === 'pending') { %>
+                  <button onclick="cancelOrder('<%= order._id %>')" class="btn btn-danger btn-sm">
+                    <i class="fas fa-times"></i> Cancel Order
+                  </button>
+                <% } %>
+                <a href="/food/menu" class="btn btn-secondary btn-sm">
+                  <i class="fas fa-plus"></i> Order More
+                </a>
+              </div>
             </article>
           <% }); %>
         </div>
@@ -138,46 +212,30 @@
 
   <script src="/js/ui.js"></script>
   <script>
-    async function updateRoomStatuses() {
-      try {
-        const response = await fetch('/rooms/api/status');
-        if (!response.ok) throw new Error('Failed to fetch room statuses');
-
-        const data = await response.json();
-        const grid = document.getElementById('roomsStatusGrid');
-        grid.innerHTML = '';
-
-        if (!data.rooms || data.rooms.length === 0) {
-          grid.innerHTML = '<div class="summary-card text-center" style="grid-column: 1 / -1;"><p class="subtitle">No rooms found</p></div>';
-          return;
-        }
-
-        data.rooms.forEach((room) => {
-          const card = document.createElement('article');
-          card.className = 'room-status-card';
-
-          const badgeClass = room.isAvailable ? 'status-clean' : (room.status === 'Maintenance' ? 'status-maintenance' : 'status-dirty');
-          const badgeText = room.isAvailable ? 'Available' : room.status;
-
-          card.innerHTML = `
-            <div class="admin-header mb-2">
-              <h3>Room ${room.roomNumber}</h3>
-              <span class="status-badge ${badgeClass}">${badgeText}</span>
-            </div>
-            <p><strong>&#8377;${room.price}</strong> / day</p>
-            <p class="subtitle">Housekeeping: ${room.housekeepingStatus || 'N/A'}</p>
-            <a href="/rooms" class="btn ${room.isAvailable ? '' : 'btn-warning'}">${room.isAvailable ? 'Book Now' : 'View Rooms'}</a>
-          `;
-
-          grid.appendChild(card);
+    function cancelOrder(orderId) {
+      if (confirm('Are you sure you want to cancel this order? This action cannot be undone.')) {
+        fetch(`/food/cancel-order/${orderId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        })
+        .then(response => {
+          if (response.ok) {
+            alert('Order cancelled successfully!');
+            location.reload();
+          } else {
+            alert('Failed to cancel order. Please try again.');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while cancelling the order.');
         });
-      } catch (error) {
-        document.getElementById('roomsStatusGrid').innerHTML = '<div class="summary-card text-center" style="grid-column: 1 / -1;"><p class="subtitle">Could not load room statuses. Retrying...</p></div>';
       }
     }
-
-    updateRoomStatuses();
-    setInterval(updateRoomStatuses, 30000);
+    
+    console.log('Dashboard script loaded successfully');
   </script>
 </body>
 </html>

@@ -10,7 +10,12 @@
 <body class="floating-orbs">
   <div class="navbar">
     <h2>HotelBook</h2>
-    <div class="nav-links">
+    <button class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
       <a href="/"><i class="fas fa-home"></i> Home</a>
       <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
       <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
@@ -57,15 +62,10 @@
       <% orderedCategories.forEach(category => { %>
         <section class="mb-4">
           <h2 class="section-title gradient-text"><%= category %></h2>
-          <div class="menu-grid stagger">
+          <div class="menu-grid">
             <% categories[category].forEach(item => { %>
               <article class="menu-item">
-                <% if (item.image) { %>
-                  <img src="<%= item.image %>" alt="<%= item.name %>" class="menu-item-media">
-                <% } else { %>
-                  <img src="/images/default-menu.jpg" alt="<%= item.name %>" class="menu-item-media">
-                <% } %>
-
+                <img src="<%= item.image || '/images/default-menu.jpg' %>" alt="<%= item.name %>" class="menu-item-media">
                 <div class="menu-item-body">
                   <h4 class="menu-item-title"><%= item.name %></h4>
                   <% if (item.description) { %>

@@ -30,6 +30,61 @@
     tr:hover {
       background-color: #f1f1f1;
     }
+    .status-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    .status-pending {
+      background-color: #fff3cd;
+      color: #856404;
+    }
+    .status-confirmed {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .status-checked-in {
+      background-color: #d1ecf1;
+      color: #0c5460;
+    }
+    .status-checked-out {
+      background-color: #e2e3e5;
+      color: #383d41;
+    }
+    .status-cancelled {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+    .actions-cell {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .status-select {
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .action-btn {
+      padding: 0.4rem 0.6rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .action-btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+    .action-btn-danger:hover {
+      background-color: #c82333;
+    }
   </style>
 </head>
 <body>
@@ -63,9 +118,23 @@
                 <td><%= booking.room ? booking.room.roomNumber + ' (' + booking.room.type + ')' : 'Room Deleted' %></td>
                 <td><%= booking.user ? booking.user.name + ' (' + booking.user.email + ')' : 'User Deleted' %></td>
                 <td><%= new Date(booking.checkIn).toLocaleDateString() %> - <%= new Date(booking.checkOut).toLocaleDateString() %></td>
-                <td><span class="text-<%= booking.status === 'confirmed' ? 'success' : 'warning' %>"><%= booking.status %></span></td>
                 <td>
-                  <a href="/admin/bookings/cancel/<%= booking._id %>" title="Cancel Booking" style="color: var(--danger-color);"><i class="fas fa-times-circle"></i></a>
+                  <span class="status-badge status-<%= booking.status %>">
+                    <%= booking.status.charAt(0).toUpperCase() + booking.status.slice(1).replace('-', ' ') %>
+                  </span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <select class="status-select" onchange="updateBookingStatus('<%= booking._id %>', this.value)">
+                      <option value="">Change Status</option>
+                      <option value="pending" <%= booking.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                      <option value="confirmed" <%= booking.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                      <option value="checked-in" <%= booking.status === 'checked-in' ? 'selected' : '' %>>Checked In</option>
+                      <option value="checked-out" <%= booking.status === 'checked-out' ? 'selected' : '' %>>Checked Out</option>
+                      <option value="cancelled" <%= booking.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    </select>
+                    <a href="/admin/bookings/cancel/<%= booking._id %>" title="Cancel Booking" class="action-btn action-btn-danger" onclick="return confirm('Are you sure you want to cancel this booking?');"><i class="fas fa-trash"></i> Cancel</a>
+                  </div>
                 </td>
               </tr>
             <% }) %>
@@ -76,5 +145,35 @@
       <% } %>
     </div>
   </section>
+
+  <script>
+    function updateBookingStatus(bookingId, newStatus) {
+      if (!newStatus) return;
+      
+      if (confirm(`Are you sure you want to change the booking status to "${newStatus}"?`)) {
+        fetch(`/admin/bookings/update-status/${bookingId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => {
+          if (response.ok) {
+            location.reload();
+          } else {
+            alert('Failed to update booking status');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while updating the status');
+        });
+      } else {
+        // Reset select if user cancels
+        location.reload();
+      }
+    }
+  </script>
 </body>
 </html>

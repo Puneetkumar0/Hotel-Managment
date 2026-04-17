@@ -10,7 +10,12 @@
 <body class="floating-orbs">
   <div class="navbar">
     <h2>Hotel Admin Panel</h2>
-    <div class="nav-links">
+    <button class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
       <a href="/admin/rooms"><i class="fas fa-bed"></i> Rooms</a>
       <a href="/admin/bookings"><i class="fas fa-calendar-check"></i> Bookings</a>
       <a href="/admin/food-menu"><i class="fas fa-utensils"></i> Food Menu</a>
@@ -27,35 +32,52 @@
       </div>
       <div class="hero-actions">
         <a href="/admin/rooms" class="btn btn-primary">Manage Rooms</a>
-        <a href="/admin/food-menu" class="btn btn-secondary">Food Menu</a>
+        <a href="/admin/food-menu" class="btn btn-secondary">Manage Room Service</a>
       </div>
     </div>
 
     <div class="support-container stagger mt-4">
       <article class="support-card">
+        <i class="fas fa-broom fa-3x" style="color: var(--tertiary); margin-bottom: 1rem;"></i>
         <h3>Housekeeping</h3>
         <p>Manage room cleaning statuses and keep rooms guest-ready.</p>
-        <a href="/admin/housekeeping" class="btn">Manage Status</a>
+        <a href="/admin/housekeeping" class="btn btn-warm">Manage Status</a>
       </article>
       <article class="support-card">
+        <i class="fas fa-boxes fa-3x" style="color: var(--accent); margin-bottom: 1rem;"></i>
         <h3>Inventory</h3>
         <p>Track supplies, stock levels, and reorder reminders.</p>
-        <a href="/admin/inventory" class="btn">Manage Stock</a>
+        <a href="/admin/inventory" class="btn btn-accent">Manage Stock</a>
       </article>
       <article class="support-card">
+        <i class="fas fa-bed fa-3x" style="color: var(--secondary); margin-bottom: 1rem;"></i>
         <h3>Room Management</h3>
         <p>Add, edit, or remove rooms with a clean workflow.</p>
-        <a href="/admin/rooms" class="btn">Manage Rooms</a>
+        <a href="/admin/rooms" class="btn btn-secondary">Manage Rooms</a>
       </article>
       <article class="support-card">
-        <h3>Food Menu</h3>
-        <p>Update room service options, pricing, and availability.</p>
-        <a href="/admin/food-menu" class="btn">Manage Menu</a>
+        <i class="fas fa-chart-line fa-3x" style="color: var(--success); margin-bottom: 1rem;"></i>
+        <h3>Reports</h3>
+        <p>View analytics, revenue reports, and business insights.</p>
+        <a href="/admin/reports" class="btn btn-success">View Reports</a>
       </article>
       <article class="support-card">
+        <i class="fas fa-users fa-3x" style="color: var(--primary); margin-bottom: 1rem;"></i>
+        <h3>Staff Management</h3>
+        <p>Manage staff schedules, roles, and permissions.</p>
+        <a href="/admin/staff" class="btn">Manage Staff</a>
+      </article>
+      <article class="support-card">
+        <i class="fas fa-utensils fa-3x" style="color: var(--warning); margin-bottom: 1rem;"></i>
+        <h3>Room Service</h3>
+        <p>Manage menu items, orders, and kitchen operations.</p>
+        <a href="/admin/food-menu" class="btn btn-warning">Manage Room Service</a>
+      </article>
+      <article class="support-card">
+        <i class="fas fa-calendar-check fa-3x" style="color: var(--info); margin-bottom: 1rem;"></i>
         <h3>Booking Management</h3>
         <p>Monitor customer bookings and check-in flow in real time.</p>
-        <a href="/admin/bookings" class="btn">Manage Bookings</a>
+        <a href="/admin/bookings" class="btn btn-primary">Manage Bookings</a>
       </article>
     </div>
   </section>

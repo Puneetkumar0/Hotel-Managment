@@ -40,6 +40,12 @@ router.post("/rooms/toggle/:id", roomController.toggleRoomStatus);
 const foodMenuRoutes = require('./foodMenuRoutes');
 router.use('/food-menu', foodMenuRoutes);
 
+// Food Orders Management
+const foodOrderController = require('../controllers/foodOrderController');
+router.get('/food-orders', foodOrderController.adminGetOrders);
+router.post('/food-orders/update-status/:id', foodOrderController.adminUpdateOrderStatus);
+router.get('/food-orders/delete/:id', foodOrderController.adminDeleteOrder);
+
 // Booking Management Page
 router.get("/bookings", async (req, res) => {
   try {
@@ -71,6 +77,36 @@ router.get("/bookings/cancel/:id", async (req, res) => {
   } catch (error) {
     console.error("Error cancelling booking:", error);
     res.status(500).send("Server Error");
+  }
+});
+
+// Update booking status
+router.post("/bookings/update-status/:id", async (req, res) => {
+  try {
+    const { status } = req.body;
+    const validStatuses = ['pending', 'confirmed', 'checked-in', 'checked-out', 'cancelled'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+
+    booking.status = status;
+    await booking.save();
+
+    // If status is cancelled, free up the room
+    if (status === 'cancelled' && booking.room) {
+      await Room.findByIdAndUpdate(booking.room, { status: "available" });
+    }
+
+    res.json({ success: true, message: 'Booking status updated successfully' });
+  } catch (error) {
+    console.error("Error updating booking status:", error);
+    res.status(500).json({ error: 'Server Error' });
   }
 });
 

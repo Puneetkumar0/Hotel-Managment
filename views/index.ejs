@@ -10,7 +10,12 @@
 <body class="floating-orbs">
   <div class="navbar">
     <h2>HotelBook</h2>
-    <div class="nav-links">
+    <button class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
       <a href="/"><i class="fas fa-home"></i> Home</a>
       <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
       <a href="/support"><i class="fas fa-headset"></i> Support</a>
@@ -46,24 +51,34 @@
 
     <div class="feature-grid stagger">
       <article class="feature-card">
-        <i class="fas fa-tags fa-2x"></i>
+        <i class="fas fa-tags fa-3x" style="color: var(--primary);"></i>
         <h3>Best Prices</h3>
         <p>Exclusive rates and transparent pricing with no hidden surprises.</p>
       </article>
       <article class="feature-card">
-        <i class="fas fa-shield-alt fa-2x"></i>
+        <i class="fas fa-shield-alt fa-3x" style="color: var(--success);"></i>
         <h3>Secure Booking</h3>
         <p>Protected transactions and trusted payment flow every time.</p>
       </article>
       <article class="feature-card">
-        <i class="fas fa-clock fa-2x"></i>
+        <i class="fas fa-clock fa-3x" style="color: var(--tertiary);"></i>
         <h3>24/7 Support</h3>
         <p>Quick help from our support team whenever you need us.</p>
       </article>
       <article class="feature-card">
-        <i class="fas fa-mobile-alt fa-2x"></i>
+        <i class="fas fa-mobile-alt fa-3x" style="color: var(--secondary);"></i>
         <h3>Mobile Friendly</h3>
         <p>Browse, book, and manage bookings smoothly on any device.</p>
+      </article>
+      <article class="feature-card">
+        <i class="fas fa-star fa-3x" style="color: var(--warning);"></i>
+        <h3>Premium Service</h3>
+        <p>Experience luxury accommodations with top-tier amenities.</p>
+      </article>
+      <article class="feature-card">
+        <i class="fas fa-globe fa-3x" style="color: var(--accent);"></i>
+        <h3>Global Network</h3>
+        <p>Access to hotels worldwide with our extensive partner network.</p>
       </article>
     </div>
   </section>
@@ -74,18 +89,22 @@
     </div>
     <div class="stat-grid stagger">
       <div class="stat-item">
+        <i class="fas fa-users fa-2x" style="color: var(--primary); margin-bottom: 0.5rem;"></i>
         <h3>10K+</h3>
         <p>Happy Guests</p>
       </div>
       <div class="stat-item">
+        <i class="fas fa-building fa-2x" style="color: var(--secondary); margin-bottom: 0.5rem;"></i>
         <h3>500+</h3>
         <p>Partner Hotels</p>
       </div>
       <div class="stat-item">
+        <i class="fas fa-star-half-alt fa-2x" style="color: var(--warning); margin-bottom: 0.5rem;"></i>
         <h3>4.8</h3>
         <p>Average Rating</p>
       </div>
       <div class="stat-item">
+        <i class="fas fa-headset fa-2x" style="color: var(--success); margin-bottom: 0.5rem;"></i>
         <h3>24/7</h3>
         <p>Customer Support</p>
       </div>

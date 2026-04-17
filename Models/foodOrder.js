@@ -14,7 +14,7 @@ const foodOrderSchema = new mongoose.Schema({
   totalPrice: { type: Number, required: true },
   status: { 
     type: String, 
-    enum: ['pending', 'preparing', 'delivered', 'cancelled'], 
+    enum: ['pending', 'preparing', 'ready', 'delivered', 'cancelled'], 
     default: 'pending' 
   },
   orderDate: { type: Date, default: Date.now },
