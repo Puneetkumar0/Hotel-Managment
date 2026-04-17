@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Food Menu Management - Admin</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <%- include('../partials/admin-nav') %>
+
+  <main class="container menu-admin-shell">
+    <header class="admin-header mb-4 fade-in">
+      <h1 class="gradient-text"><i class="fas fa-utensils"></i> Food Menu Management</h1>
+      <a href="/admin/food-menu/add" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Item</a>
+    </header>
+
+    <section class="card mb-4 fade-in">
+      <form method="GET" class="filter-form">
+        <div class="form-row" style="width: 100%;">
+          <select name="category">
+            <option value="">All Categories</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat %>" <%= filters.category === cat ? 'selected' : '' %>><%= cat %></option>
+            <% }); %>
+          </select>
+
+          <input type="text" name="search" placeholder="Search name or description" value="<%= filters.search || '' %>">
+
+          <select name="available">
+            <option value="">All Status</option>
+            <option value="true" <%= filters.available === 'true' ? 'selected' : '' %>>Available</option>
+            <option value="false" <%= filters.available === 'false' ? 'selected' : '' %>>Unavailable</option>
+          </select>
+
+          <button type="submit" class="btn btn-secondary"><i class="fas fa-filter"></i> Filter</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card fade-in food-items-table">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Image</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(item => { %>
+              <tr>
+                <td><img src="<%= item.image %>" alt="<%= item.name %>" style="width: 56px; height: 56px; object-fit: cover; border-radius: 10px;"></td>
+                <td><%= item.name %></td>
+                <td><span class="badge"><%= item.category %></span></td>
+                <td>&#8377;<%= item.price %></td>
+                <td>
+                  <span class="status-badge <%= item.available ? 'available' : 'unavailable' %>">
+                    <%= item.available ? 'Available' : 'Unavailable' %>
+                  </span>
+                </td>
+                <td>
+                  <div class="table-actions">
+                    <a href="/admin/food-menu/<%= item._id %>/edit" class="btn btn-warning"><i class="fas fa-edit"></i></a>
+                    <form action="/admin/food-menu/<%= item._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Delete this item?')">
+                      <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+            <% if (items.length === 0) { %>
+              <tr>
+                <td colspan="6" class="text-center">No menu items found. <a href="/admin/food-menu/add">Add the first one</a>.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="food-items-mobile fade-in">
+      <% items.forEach(item => { %>
+        <article class="food-item-mobile-card">
+          <div class="food-item-mobile-head">
+            <img src="<%= item.image %>" alt="<%= item.name %>">
+            <div>
+              <h3><%= item.name %></h3>
+              <span class="badge"><%= item.category %></span>
+            </div>
+          </div>
+          <div class="food-item-mobile-meta">
+            <p><strong>Price:</strong> &#8377;<%= item.price %></p>
+            <p>
+              <strong>Status:</strong>
+              <span class="status-badge <%= item.available ? 'available' : 'unavailable' %>">
+                <%= item.available ? 'Available' : 'Unavailable' %>
+              </span>
+            </p>
+          </div>
+          <div class="table-actions mt-4">
+            <a href="/admin/food-menu/<%= item._id %>/edit" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a>
+            <form action="/admin/food-menu/<%= item._id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Delete this item?')">
+              <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</button>
+            </form>
+          </div>
+        </article>
+      <% }); %>
+      <% if (items.length === 0) { %>
+        <article class="food-item-mobile-card text-center">
+          No menu items found. <a href="/admin/food-menu/add">Add the first one</a>.
+        </article>
+      <% } %>
+    </section>
+
+    <% if (totalPages > 1) { %>
+      <div class="pagination mt-4">
+        <% if (pagination.hasPrev) { %>
+          <a href="?page=<%= pagination.page - 1 %>&<%= Object.keys(filters).map(k => k + '=' + filters[k]).join('&') %>">Previous</a>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <a href="?page=<%= i %>&<%= Object.keys(filters).map(k => k + '=' + filters[k]).join('&') %>" class="<%= pagination.page == i ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+
+        <% if (pagination.hasNext) { %>
+          <a href="?page=<%= pagination.page + 1 %>&<%= Object.keys(filters).map(k => k + '=' + filters[k]).join('&') %>">Next</a>
+        <% } %>
+      </div>
+    <% } %>
+  </main>
+
+  <script src="/js/ui.js"></script>
+</body>
+</html>

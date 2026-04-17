@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - HotelBook</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <div class="navbar">
+    <h2>HotelBook</h2>
+    <div class="nav-links">
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
+      <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+    </div>
+  </div>
+
+  <main class="content-section">
+    <section class="form-container fade-in">
+      <div class="page-header">
+        <h1 class="gradient-text"><i class="fas fa-user-plus"></i> Create Account</h1>
+        <p class="subtitle">Join HotelBook and start booking stylish stays.</p>
+      </div>
+
+      <form action="/register" method="POST">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+        </div>
+
+        <button type="submit" class="book-btn">Create Account</button>
+      </form>
+
+      <p class="subtitle text-center mt-4">Already have an account?</p>
+      <p class="text-center"><a href="/login" class="btn btn-secondary">Sign In</a></p>
+    </section>
+  </main>
+
+  <script src="/js/ui.js"></script>
+</body>
+</html>

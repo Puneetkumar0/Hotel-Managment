@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Staff Management</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <h1>Staff Management</h1>
+  
+  <form action="/admin/staff/create" method="POST">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <select name="role">
+      <option value="receptionist">Receptionist</option>
+      <option value="manager">Manager</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button type="submit">Create Staff</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach(user => { %>
+        <tr>
+          <td><%= user.name %></td>
+          <td><%= user.email %></td>
+          <td>
+            <form action="/admin/staff/update-role" method="POST" style="display:inline;">
+              <input type="hidden" name="userId" value="<%= user._id %>">
+              <select name="role" onchange="this.form.submit()">
+                <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>User</option>
+                <option value="receptionist" <%= user.role === 'receptionist' ? 'selected' : '' %>>Receptionist</option>
+                <option value="manager" <%= user.role === 'manager' ? 'selected' : '' %>>Manager</option>
+                <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+              </select>
+            </form>
+          </td>
+          <td><a href="#">Delete</a></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+  <a href="/admin">Back to Admin</a>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - HotelBook</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <div class="navbar">
+    <h2>Hotel Admin Panel</h2>
+    <div class="nav-links">
+      <a href="/admin/rooms"><i class="fas fa-bed"></i> Rooms</a>
+      <a href="/admin/bookings"><i class="fas fa-calendar-check"></i> Bookings</a>
+      <a href="/admin/food-menu"><i class="fas fa-utensils"></i> Food Menu</a>
+      <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </div>
+
+  <section class="admin-section">
+    <div class="admin-hero fade-in" style="background: var(--gradient-vivid); border-radius: 24px; padding: 2rem; color: #fff; box-shadow: var(--shadow);">
+      <div>
+        <span class="badge-pill">Hotel Manager</span>
+        <h2>Welcome back, Admin</h2>
+        <p>Keep operations smooth with one colorful dashboard for rooms, bookings, food, and inventory.</p>
+      </div>
+      <div class="hero-actions">
+        <a href="/admin/rooms" class="btn btn-primary">Manage Rooms</a>
+        <a href="/admin/food-menu" class="btn btn-secondary">Food Menu</a>
+      </div>
+    </div>
+
+    <div class="support-container stagger mt-4">
+      <article class="support-card">
+        <h3>Housekeeping</h3>
+        <p>Manage room cleaning statuses and keep rooms guest-ready.</p>
+        <a href="/admin/housekeeping" class="btn">Manage Status</a>
+      </article>
+      <article class="support-card">
+        <h3>Inventory</h3>
+        <p>Track supplies, stock levels, and reorder reminders.</p>
+        <a href="/admin/inventory" class="btn">Manage Stock</a>
+      </article>
+      <article class="support-card">
+        <h3>Room Management</h3>
+        <p>Add, edit, or remove rooms with a clean workflow.</p>
+        <a href="/admin/rooms" class="btn">Manage Rooms</a>
+      </article>
+      <article class="support-card">
+        <h3>Food Menu</h3>
+        <p>Update room service options, pricing, and availability.</p>
+        <a href="/admin/food-menu" class="btn">Manage Menu</a>
+      </article>
+      <article class="support-card">
+        <h3>Booking Management</h3>
+        <p>Monitor customer bookings and check-in flow in real time.</p>
+        <a href="/admin/bookings" class="btn">Manage Bookings</a>
+      </article>
+    </div>
+  </section>
+
+  <script src="/js/ui.js"></script>
+</body>
+</html>

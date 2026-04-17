@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing Rules - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2>💰 Pricing Rules</h2>
+        <div class="nav-links">
+            <a href="/admin">Admin Dashboard</a>
+            <a href="/admin/rooms">Rooms</a>
+        </div>
+    </nav>
+
+    <div class="admin-section">
+        <div class="form-container">
+            <h2>Add New Pricing Rule</h2>
+            <form action="/admin/pricing" method="POST">
+                <div class="form-group">
+                    <label>Room Type:</label>
+                    <input type="text" name="roomType" required>
+                </div>
+                <div class="form-group">
+                    <label>Base Price ($):</label>
+                    <input type="number" name="basePrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>Seasonal Multiplier:</label>
+                    <input type="number" name="seasonalMultiplier" step="0.01" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Demand Multiplier:</label>
+                    <input type="number" name="demandMultiplier" step="0.01" value="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Discount (%):</label>
+                    <input type="number" name="discountPercentage" value="0" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label>Start Date:</label>
+                        <input type="date" name="startDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>End Date:</label>
+                        <input type="date" name="endDate" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary book-btn">Add Rule</button>
+            </form>
+        </div>
+
+        <h2>Existing Rules</h2>
+        <div class="metric-grid">
+            <% rules.forEach(rule => { %>
+                <div class="metric-card <%= rule.active ? '' : 'text-danger' %>">
+                    <h3><%= rule.roomType %></h3>
+                    <p>Base: $<%= rule.basePrice %> | Active: <%= rule.active ? 'Yes' : 'No' %></p>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>

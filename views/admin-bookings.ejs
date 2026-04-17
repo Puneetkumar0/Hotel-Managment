@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %> - Admin Panel</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .table-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    th {
+      background-color: #f8f9fa;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h2>Hotel Admin Panel</h2>
+    <div class="nav-links">
+      <a href="/admin">Dashboard</a>
+      <a href="/rooms">View Site</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+
+  <section class="admin-section" style="max-width: 1400px;">
+    <h2><%= pageTitle %></h2>
+
+    <div class="table-container">
+      <% if (bookings.length > 0) { %>
+        <table>
+          <thead>
+            <tr>
+              <th>Room</th>
+              <th>User</th>
+              <th>Dates</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% bookings.forEach(booking => { %>
+              <tr>
+                <td><%= booking.room ? booking.room.roomNumber + ' (' + booking.room.type + ')' : 'Room Deleted' %></td>
+                <td><%= booking.user ? booking.user.name + ' (' + booking.user.email + ')' : 'User Deleted' %></td>
+                <td><%= new Date(booking.checkIn).toLocaleDateString() %> - <%= new Date(booking.checkOut).toLocaleDateString() %></td>
+                <td><span class="text-<%= booking.status === 'confirmed' ? 'success' : 'warning' %>"><%= booking.status %></span></td>
+                <td>
+                  <a href="/admin/bookings/cancel/<%= booking._id %>" title="Cancel Booking" style="color: var(--danger-color);"><i class="fas fa-times-circle"></i></a>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>No bookings found.</p>
+      <% } %>
+    </div>
+  </section>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book Room - HotelBook</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <div class="navbar">
+    <h2>HotelBook</h2>
+    <div class="nav-links">
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/rooms"><i class="fas fa-bed"></i> Back to Rooms</a>
+      <a href="/support"><i class="fas fa-headset"></i> Support</a>
+      <% if (user) { %>
+        <a href="<%= isAdmin ? '/admin' : '/dashboard' %>"><i class="fas fa-user-circle"></i> <%= user.name %></a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <% } else { %>
+        <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="/register"><i class="fas fa-user-plus"></i> Register</a>
+      <% } %>
+    </div>
+  </div>
+
+  <section class="booking-section fade-in">
+    <h2 class="gradient-text">Book Room <%= room.roomNumber %></h2>
+
+    <div class="summary-card mb-4">
+      <p><strong>Type:</strong> <%= room.type %></p>
+      <p><strong>Price:</strong> &#8377;<%= room.price %> / day</p>
+      <p><strong>Status:</strong> <%= room.status.toUpperCase() %></p>
+    </div>
+
+    <form action="/booking" method="POST">
+      <input type="hidden" name="roomId" value="<%= room._id %>">
+      <input type="hidden" name="userId" value="<%= userId %>">
+
+      <div class="form-group">
+        <label for="checkIn">Check-in Date</label>
+        <input type="date" id="checkIn" name="checkIn" required>
+      </div>
+
+      <div class="form-group">
+        <label for="checkOut">Check-out Date</label>
+        <input type="date" id="checkOut" name="checkOut" required>
+      </div>
+
+      <div class="form-group">
+        <label for="specialRequests">Special Requests</label>
+        <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="Any special requests..."></textarea>
+      </div>
+
+      <button type="submit" class="book-btn">Confirm Booking</button>
+    </form>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Hotel Management</p>
+  </footer>
+
+  <script src="/js/ui.js"></script>
+</body>
+</html>

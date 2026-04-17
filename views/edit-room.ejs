@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %> - Admin Panel</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <h2>Hotel Admin Panel</h2>
+    <div class="nav-links">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/rooms">Manage Rooms</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="form-container">
+    <h2><%= pageTitle %>: Room <%= room.roomNumber %></h2>
+    <form action="/admin/rooms/edit/<%= room._id %>" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="roomNumber">Room Number</label>
+        <input type="text" id="roomNumber" name="roomNumber" value="<%= room.roomNumber %>" required>
+      </div>
+      <div class="form-group">
+        <label for="type">Room Type</label>
+        <select id="type" name="type" required>
+          <option value="Single" <%= room.type === 'Single' ? 'selected' : '' %>>Single</option>
+          <option value="Double" <%= room.type === 'Double' ? 'selected' : '' %>>Double</option>
+          <option value="Suite" <%= room.type === 'Suite' ? 'selected' : '' %>>Suite</option>
+          <option value="Duplex" <%= room.type === 'Duplex' ? 'selected' : '' %>>Duplex</option>
+          <option value="AC" <%= room.type === 'AC' ? 'selected' : '' %>>AC</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="price">Price per Night (₹)</label>
+        <input type="number" id="price" name="price" value="<%= room.price %>" required>
+      </div>
+      <div class="form-group">
+        <label for="capacity">Capacity (Guests)</label>
+        <input type="number" id="capacity" name="capacity" value="<%= room.capacity %>" required>
+      </div>
+      <div class="form-group">
+        <label for="amenities">Amenities (comma-separated)</label>
+        <input type="text" id="amenities" name="amenities" value="<%= room.amenities.join(', ') %>">
+      </div>
+      <div class="form-group">
+        <label for="image">Room Image (leave blank to keep current)</label>
+        <% if (room.images && room.images.length > 0) { %>
+          <img src="<%= room.images[0] %>" alt="Current Room Image" style="max-width: 200px; display: block; margin-bottom: 1rem;">
+        <% } %>
+        <input type="file" id="image" name="image" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="3"><%= room.description %></textarea>
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          <option value="available" <%= (room.status === 'available') ? 'selected' : '' %>>Available</option>
+          <option value="not_available" <%= (room.status === 'not_available') ? 'selected' : '' %>>Not Available</option>
+        </select>
+      </div>
+      <button type="submit" class="book-btn">Update Room</button>
+    </form>
+  </div>
+</body>
+</html>

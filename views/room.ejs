@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rooms - HotelBook</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <div class="navbar">
+    <h2>HotelBook</h2>
+    <div class="nav-links">
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
+      <a href="/support"><i class="fas fa-headset"></i> Support</a>
+      <% if (user) { %>
+        <a href="<%= isAdmin ? '/admin' : '/dashboard' %>"><i class="fas fa-user-circle"></i> <%= user.name %></a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <% } else { %>
+        <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="/register"><i class="fas fa-user-plus"></i> Register</a>
+      <% } %>
+    </div>
+  </div>
+
+  <section class="rooms-section">
+    <% if (typeof searchParams !== 'undefined' && (searchParams.checkin || searchParams.checkout || searchParams.city)) { %>
+      <div class="summary-card fade-in mb-4 text-center">
+        <h3 class="gradient-text">Search Results</h3>
+        <p>
+          <% if (searchParams.city) { %>City: <strong><%= searchParams.city %></strong><br><% } %>
+          Check-in: <strong><%= searchParams.checkin %></strong><br>
+          Check-out: <strong><%= searchParams.checkout %></strong>
+        </p>
+        <a href="/rooms" class="btn btn-secondary mt-4">Clear Filters</a>
+      </div>
+      <h2 class="section-title gradient-text">Available Rooms (<%= pagination.total %> found)</h2>
+    <% } else { %>
+      <h2 class="section-title gradient-text">All Rooms (<%= pagination ? pagination.total : rooms.length %> total)</h2>
+    <% } %>
+
+    <div class="room-filters fade-in mb-4">
+      <form method="GET" action="/rooms">
+        <% if (searchParams.city) { %><input type="hidden" name="city" value="<%= searchParams.city %>"><% } %>
+        <% if (searchParams.checkin) { %><input type="hidden" name="checkin" value="<%= searchParams.checkin %>"><% } %>
+        <% if (searchParams.checkout) { %><input type="hidden" name="checkout" value="<%= searchParams.checkout %>"><% } %>
+
+        <div>
+          <label for="type">Room Type</label>
+          <select name="type" id="type">
+            <option value="all" <%= (filters && filters.type === 'all') ? 'selected' : '' %>>All Types</option>
+            <option value="AC" <%= (filters && filters.type === 'AC') ? 'selected' : '' %>>AC</option>
+            <option value="Duplex" <%= (filters && filters.type === 'Duplex') ? 'selected' : '' %>>Duplex</option>
+            <option value="Single" <%= (filters && filters.type === 'Single') ? 'selected' : '' %>>Single</option>
+            <option value="Double" <%= (filters && filters.type === 'Double') ? 'selected' : '' %>>Double</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="search">Search</label>
+          <input type="text" name="search" id="search" placeholder="Room number or description" value="<%= filters ? filters.search : '' %>">
+        </div>
+
+        <button type="submit" class="btn"><i class="fas fa-search"></i> Filter</button>
+        <a href="/rooms<%= (searchParams.city ? '?city=' + encodeURIComponent(searchParams.city) : '') %><%= (searchParams.checkin ? (searchParams.city ? '&' : '?') + 'checkin=' + searchParams.checkin : '') %><%= (searchParams.checkout ? ((searchParams.city || searchParams.checkin) ? '&' : '?') + 'checkout=' + searchParams.checkout : '') %>" class="btn btn-warning"><i class="fas fa-times"></i> Clear</a>
+      </form>
+    </div>
+
+    <div class="rooms-grid stagger">
+      <% if (!rooms || rooms.length === 0) { %>
+        <div class="summary-card text-center" style="grid-column: 1 / -1;">
+          <p>No rooms available matching your criteria.</p>
+          <% if (typeof searchParams !== 'undefined' && Object.values(searchParams).some(v => v)) { %>
+            <a href="/rooms" class="btn mt-4">View All Rooms</a>
+            <a href="/" class="btn btn-secondary mt-4">New Search</a>
+          <% } else { %>
+            <a href="/rooms/admin" class="btn mt-4">Add Rooms (Admin)</a>
+          <% } %>
+        </div>
+      <% } else { %>
+        <% rooms.forEach(room => { %>
+          <article class="room-card">
+            <% let imgSrc = room.images && room.images.length > 0 ? room.images[0] : `/images/room-${room.roomNumber}.jpg`; %>
+            <img src="<%= imgSrc %>" alt="<%= room.type %> Room" onerror="this.src='/images/room-101.jpg';">
+
+            <div class="room-info">
+              <h3><i class="fas fa-bed"></i> Room <%= room.roomNumber %></h3>
+              <p><strong><%= room.type %></strong></p>
+              <p class="price">&#8377;<%= room.price %> <small>/ day</small></p>
+
+              <% if (room.capacity) { %>
+                <p><i class="fas fa-users"></i> Capacity: <%= room.capacity %> guests</p>
+              <% } %>
+
+              <% if (room.amenities && room.amenities.length > 0) { %>
+                <div class="mb-2">
+                  <% room.amenities.forEach(amenity => { %>
+                    <span class="badge"><%= amenity %></span>
+                  <% }); %>
+                </div>
+              <% } %>
+
+              <% if (room.description) { %>
+                <p><em><%= room.description %></em></p>
+              <% } %>
+
+              <% if (room.isAvailable) { %>
+                <p class="status-badge status-clean mb-2"><i class="fas fa-check-circle"></i>&nbsp;Available now</p>
+                <a href="/booking/<%= room._id %>" class="book-btn"><i class="fas fa-calendar-check"></i> Book Now</a>
+              <% } else { %>
+                <p class="status-badge status-dirty mb-2"><i class="fas fa-clock"></i>&nbsp;Not Available</p>
+                <% if (room.nextAvailableDate) { %>
+                  <p>Available from: <strong><%= new Date(room.nextAvailableDate).toLocaleDateString('en-IN') %></strong></p>
+                <% } %>
+              <% } %>
+            </div>
+          </article>
+        <% }); %>
+      <% } %>
+    </div>
+
+    <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+      <div class="pagination mt-4">
+        <% if (pagination.hasPrev) { %>
+          <a href="/rooms?page=<%= pagination.page - 1 %><%= (searchParams.city ? '&amp;city=' + encodeURIComponent(searchParams.city) : '') %><%= (searchParams.checkin ? '&amp;checkin=' + searchParams.checkin : '') %><%= (searchParams.checkout ? '&amp;checkout=' + searchParams.checkout : '') %><%= ((filters && filters.type && filters.type !== 'all') ? '&amp;type=' + filters.type : '') %><%= (filters && filters.search ? '&amp;search=' + encodeURIComponent(filters.search) : '') %>">&larr; Previous</a>
+        <% } %>
+
+        <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+          <a href="/rooms?page=<%= i %><%= (searchParams.city ? '&amp;city=' + encodeURIComponent(searchParams.city) : '') %><%= (searchParams.checkin ? '&amp;checkin=' + searchParams.checkin : '') %><%= (searchParams.checkout ? '&amp;checkout=' + searchParams.checkout : '') %><%= ((filters && filters.type && filters.type !== 'all') ? '&amp;type=' + filters.type : '') %><%= (filters && filters.search ? '&amp;search=' + encodeURIComponent(filters.search) : '') %>" class="<%= i === pagination.page ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+
+        <% if (pagination.hasNext) { %>
+          <a href="/rooms?page=<%= pagination.page + 1 %><%= (searchParams.city ? '&amp;city=' + encodeURIComponent(searchParams.city) : '') %><%= (searchParams.checkin ? '&amp;checkin=' + searchParams.checkin : '') %><%= (searchParams.checkout ? '&amp;checkout=' + searchParams.checkout : '') %><%= ((filters && filters.type && filters.type !== 'all') ? '&amp;type=' + filters.type : '') %><%= (filters && filters.search ? '&amp;search=' + encodeURIComponent(filters.search) : '') %>">Next &rarr;</a>
+        <% } %>
+      </div>
+    <% } %>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 Hotel Management</p>
+  </footer>
+
+  <script src="/js/ui.js"></script>
+  <script>
+    const typeSelect = document.getElementById('type');
+    const searchInput = document.getElementById('search');
+    const roomCards = document.querySelectorAll('.room-card');
+
+    function applyClientFilters() {
+      const selectedType = typeSelect.value.toLowerCase();
+      const searchTerm = searchInput.value.toLowerCase();
+
+      roomCards.forEach((card) => {
+        const text = card.textContent.toLowerCase();
+        const matchesType = selectedType === 'all' || text.includes(selectedType);
+        const matchesSearch = !searchTerm || text.includes(searchTerm);
+        card.style.display = matchesType && matchesSearch ? '' : 'none';
+      });
+    }
+
+    typeSelect.addEventListener('change', applyClientFilters);
+    searchInput.addEventListener('input', applyClientFilters);
+  </script>
+</body>
+</html>

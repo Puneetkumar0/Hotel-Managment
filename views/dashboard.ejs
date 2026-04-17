@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - HotelBook</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <div class="navbar">
+    <h2>HotelBook</h2>
+    <div class="nav-links">
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
+      <a href="/food/menu"><i class="fas fa-utensils"></i> Food</a>
+      <a href="/support"><i class="fas fa-headset"></i> Support</a>
+      <% if (user) { %>
+        <a href="<%= isAdmin ? '/admin' : '/dashboard' %>"><i class="fas fa-user-circle"></i> <%= user.name %></a>
+      <% } %>
+      <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </div>
+
+  <main class="content-section">
+    <header class="page-header fade-in">
+      <h1 class="gradient-text"><i class="fas fa-tachometer-alt"></i> My Dashboard</h1>
+      <p class="subtitle">Manage bookings, room availability, and room-service orders.</p>
+    </header>
+
+    <section class="mb-4 fade-in">
+      <h2 class="section-title">Live Room Availability</h2>
+      <p class="subtitle">Auto-updates every 30 seconds.</p>
+      <div id="roomsStatusGrid" class="rooms-grid stagger">
+        <div class="summary-card text-center" style="grid-column: 1 / -1;">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p class="subtitle">Loading room statuses...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-4 fade-in">
+      <h2 class="section-title">Room Service Orders</h2>
+      <% if (typeof foodOrders !== 'undefined' && foodOrders.length > 0) { %>
+        <div class="orders-grid stagger">
+          <% foodOrders.slice(0, 6).forEach(order => { %>
+            <article class="order-card">
+              <div class="admin-header mb-2">
+                <h3>Order #<%= order._id.toString().slice(-6).toUpperCase() %></h3>
+                <span class="status-badge"><%= order.status %></span>
+              </div>
+              <p class="subtitle">Room <%= order.roomNumber %> | <%= new Date(order.orderDate).toLocaleDateString() %></p>
+              <p><strong>Total: &#8377;<%= order.totalPrice %></strong></p>
+              <% if (order.items.length > 0) { %>
+                <p class="subtitle"><%= order.items.map(item => `${item.quantity}x ${item.name}`).join(', ') %></p>
+              <% } %>
+              <% if (order.specialInstructions) { %>
+                <p><em><%= order.specialInstructions %></em></p>
+              <% } %>
+              <a href="/food/menu" class="btn btn-secondary">Order More</a>
+            </article>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class="summary-card text-center">
+          <h3>No room service orders yet</h3>
+          <p class="subtitle">Order delicious meals delivered to your room.</p>
+          <a href="/food/menu" class="btn btn-secondary">Order Food</a>
+        </div>
+      <% } %>
+    </section>
+
+    <section class="mb-4 fade-in">
+      <h2 class="section-title">Your Bookings</h2>
+      <% if (bookings.length === 0) { %>
+        <div class="summary-card text-center">
+          <h3>No bookings found</h3>
+          <p class="subtitle">Start your journey with a new booking.</p>
+          <a href="/rooms" class="btn">Browse Rooms</a>
+        </div>
+      <% } else { %>
+        <div class="bookings-grid stagger">
+          <% bookings.forEach(booking => { %>
+            <article class="booking-card">
+              <div class="admin-header mb-2">
+                <h3>Room <%= booking.room.roomNumber %> - <%= booking.room.type %></h3>
+                <span class="status-badge"><%= booking.status %></span>
+              </div>
+
+              <p class="subtitle"><%= new Date(booking.checkIn).toLocaleDateString() %> to <%= new Date(booking.checkOut).toLocaleDateString() %></p>
+              <p><strong>Total Amount: &#8377;<%= booking.totalPrice %></strong></p>
+
+              <% if (booking.specialRequests) { %>
+                <p><em><%= booking.specialRequests %></em></p>
+              <% } %>
+
+              <div class="form-row mt-4">
+                <% if (booking.status === 'confirmed') { %>
+                  <form action="/booking/<%= booking._id %>/checkin" method="POST">
+                    <button type="submit" class="btn btn-secondary"><i class="fas fa-sign-in-alt"></i> Check In</button>
+                  </form>
+                <% } %>
+
+                <% if (booking.status === 'checked-in') { %>
+                  <form action="/booking/<%= booking._id %>/checkout" method="POST">
+                    <button type="submit" class="btn"><i class="fas fa-sign-out-alt"></i> Check Out</button>
+                  </form>
+                <% } %>
+
+                <% if (booking.status === 'checked-out') { %>
+                  <button disabled class="btn">Completed</button>
+                <% } %>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+      <% } %>
+    </section>
+
+    <section class="mb-4 fade-in">
+      <h2 class="section-title">Quick Actions</h2>
+      <div class="quick-grid stagger">
+        <a href="/rooms" class="quick-card" style="text-decoration:none;">
+          <h3><i class="fas fa-search"></i> Find Rooms</h3>
+          <p class="subtitle">Browse and book your next stay.</p>
+        </a>
+        <a href="/food/menu" class="quick-card" style="text-decoration:none;">
+          <h3><i class="fas fa-utensils"></i> Order Food</h3>
+          <p class="subtitle">Fresh meals in a few taps.</p>
+        </a>
+        <a href="/support" class="quick-card" style="text-decoration:none;">
+          <h3><i class="fas fa-headset"></i> Get Support</h3>
+          <p class="subtitle">We are here for you 24/7.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/ui.js"></script>
+  <script>
+    async function updateRoomStatuses() {
+      try {
+        const response = await fetch('/rooms/api/status');
+        if (!response.ok) throw new Error('Failed to fetch room statuses');
+
+        const data = await response.json();
+        const grid = document.getElementById('roomsStatusGrid');
+        grid.innerHTML = '';
+
+        if (!data.rooms || data.rooms.length === 0) {
+          grid.innerHTML = '<div class="summary-card text-center" style="grid-column: 1 / -1;"><p class="subtitle">No rooms found</p></div>';
+          return;
+        }
+
+        data.rooms.forEach((room) => {
+          const card = document.createElement('article');
+          card.className = 'room-status-card';
+
+          const badgeClass = room.isAvailable ? 'status-clean' : (room.status === 'Maintenance' ? 'status-maintenance' : 'status-dirty');
+          const badgeText = room.isAvailable ? 'Available' : room.status;
+
+          card.innerHTML = `
+            <div class="admin-header mb-2">
+              <h3>Room ${room.roomNumber}</h3>
+              <span class="status-badge ${badgeClass}">${badgeText}</span>
+            </div>
+            <p><strong>&#8377;${room.price}</strong> / day</p>
+            <p class="subtitle">Housekeeping: ${room.housekeepingStatus || 'N/A'}</p>
+            <a href="/rooms" class="btn ${room.isAvailable ? '' : 'btn-warning'}">${room.isAvailable ? 'Book Now' : 'View Rooms'}</a>
+          `;
+
+          grid.appendChild(card);
+        });
+      } catch (error) {
+        document.getElementById('roomsStatusGrid').innerHTML = '<div class="summary-card text-center" style="grid-column: 1 / -1;"><p class="subtitle">Could not load room statuses. Retrying...</p></div>';
+      }
+    }
+
+    updateRoomStatuses();
+    setInterval(updateRoomStatuses, 30000);
+  </script>
+</body>
+</html>

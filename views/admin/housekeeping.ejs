@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Housekeeping - Admin</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2>🧹 Housekeeping</h2>
+        <div class="nav-links">
+            <a href="/admin">Admin Dashboard</a>
+            <a href="/admin/rooms">Rooms</a>
+            <a href="/admin/bookings">Bookings</a>
+        </div>
+    </nav>
+
+    <div class="admin-section">
+        <h2>Room Status Management</h2>
+        <div class="rooms-grid">
+            <% rooms.forEach(room => { %>
+                <div class="room-card">
+                    <div class="room-info">
+                        <h3>Room <%= room.roomNumber %></h3>
+                        <p class="text-primary">Status: <span class="status-badge status-<%= room.housekeepingStatus %>"><%= room.housekeepingStatus %></span></p>
+                        <form action="/admin/housekeeping" method="POST" style="margin-top: 1rem;">
+                            <input type="hidden" name="roomId" value="<%= room._id %>">
+                            <div class="form-group">
+                                <select name="status" class="form-group">
+                                    <option value="clean" <%= room.housekeepingStatus === 'clean' ? 'selected' : '' %>>Clean</option>
+                                    <option value="dirty" <%= room.housekeepingStatus === 'dirty' ? 'selected' : '' %>>Dirty</option>
+                                    <option value="maintenance" <%= room.housekeepingStatus === 'maintenance' ? 'selected' : '' %>>Maintenance</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary book-btn">Update Status</button>
+                        </form>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HotelBook - Find Your Perfect Stay</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <div class="navbar">
+    <h2>HotelBook</h2>
+    <div class="nav-links">
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
+      <a href="/support"><i class="fas fa-headset"></i> Support</a>
+      <% if (user) { %>
+        <a href="<%= isAdmin ? '/admin' : '/dashboard' %>"><i class="fas fa-user-circle"></i> <%= user.name %></a>
+        <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <% } else { %>
+        <a href="/login"><i class="fas fa-sign-in-alt"></i> Login</a>
+        <a href="/register"><i class="fas fa-user-plus"></i> Register</a>
+      <% } %>
+    </div>
+  </div>
+
+  <section class="hero fade-in">
+    <div class="hero-text glass">
+      <h1 class="gradient-text">Find Your Perfect Stay</h1>
+      <p>Experience luxury, comfort, and faster booking in one beautiful place.</p>
+
+      <form action="/rooms" method="GET" class="search-box">
+        <input type="text" name="city" placeholder="City or hotel name">
+        <input type="date" name="checkin">
+        <input type="date" name="checkout">
+        <button type="submit"><i class="fas fa-search"></i> Search Hotels</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="features-section">
+    <div class="page-header fade-in">
+      <h2 class="section-title gradient-text">Why Choose HotelBook?</h2>
+      <p class="subtitle">Designed for smooth stays and joyful travel planning.</p>
+    </div>
+
+    <div class="feature-grid stagger">
+      <article class="feature-card">
+        <i class="fas fa-tags fa-2x"></i>
+        <h3>Best Prices</h3>
+        <p>Exclusive rates and transparent pricing with no hidden surprises.</p>
+      </article>
+      <article class="feature-card">
+        <i class="fas fa-shield-alt fa-2x"></i>
+        <h3>Secure Booking</h3>
+        <p>Protected transactions and trusted payment flow every time.</p>
+      </article>
+      <article class="feature-card">
+        <i class="fas fa-clock fa-2x"></i>
+        <h3>24/7 Support</h3>
+        <p>Quick help from our support team whenever you need us.</p>
+      </article>
+      <article class="feature-card">
+        <i class="fas fa-mobile-alt fa-2x"></i>
+        <h3>Mobile Friendly</h3>
+        <p>Browse, book, and manage bookings smoothly on any device.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="stats-section">
+    <div class="page-header fade-in">
+      <h2 class="section-title gradient-text">Our Achievements</h2>
+    </div>
+    <div class="stat-grid stagger">
+      <div class="stat-item">
+        <h3>10K+</h3>
+        <p>Happy Guests</p>
+      </div>
+      <div class="stat-item">
+        <h3>500+</h3>
+        <p>Partner Hotels</p>
+      </div>
+      <div class="stat-item">
+        <h3>4.8</h3>
+        <p>Average Rating</p>
+      </div>
+      <div class="stat-item">
+        <h3>24/7</h3>
+        <p>Customer Support</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials-section">
+    <div class="page-header fade-in">
+      <h2 class="section-title gradient-text">What Our Guests Say</h2>
+    </div>
+
+    <div class="testimonial-grid stagger">
+      <article class="testimonial-card">
+        <p>"Amazing experience! The booking flow was simple and the stay was excellent."</p>
+        <strong>- Sarah Johnson</strong>
+      </article>
+      <article class="testimonial-card">
+        <p>"Great prices and fast support whenever I had questions."</p>
+        <strong>- Michael Chen</strong>
+      </article>
+      <article class="testimonial-card">
+        <p>"I booked from mobile in seconds. Super smooth and clean design."</p>
+        <strong>- Emma Davis</strong>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>&copy; 2026 HotelBook. All rights reserved.</p>
+  </footer>
+
+  <script src="/js/ui.js"></script>
+</body>
+</html>

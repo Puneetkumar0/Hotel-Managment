@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Room Service Menu - HotelBook</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="floating-orbs">
+  <div class="navbar">
+    <h2>HotelBook</h2>
+    <div class="nav-links">
+      <a href="/"><i class="fas fa-home"></i> Home</a>
+      <a href="/rooms"><i class="fas fa-bed"></i> Rooms</a>
+      <a href="/dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="/support"><i class="fas fa-headset"></i> Support</a>
+      <% if (user) { %>
+        <a href="<%= isAdmin ? '/admin' : '/dashboard' %>"><i class="fas fa-user-circle"></i> <%= user.name %></a>
+      <% } %>
+      <a href="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+  </div>
+
+  <main class="content-section">
+    <div class="page-header fade-in">
+      <h1 class="gradient-text"><i class="fas fa-utensils"></i> Room Service Menu</h1>
+      <p class="subtitle">Order delicious meals delivered straight to your room.</p>
+    </div>
+
+    <form action="/food/order" method="POST" id="orderForm">
+      <input type="hidden" name="items" id="itemsJson">
+
+      <section class="info-card fade-in mb-4">
+        <h3><i class="fas fa-door-open"></i> Delivery Details</h3>
+        <div class="form-row mt-4">
+          <input type="text" id="roomNumberInput" name="roomNumber" placeholder="Enter your room number (e.g., 101)" required>
+          <span class="status-badge">Delivery in ~30 mins</span>
+        </div>
+      </section>
+
+      <% const categoryOrder = ['Breakfast', 'Lunch', 'Dinner', 'Beverages', 'Dessert']; %>
+      <% const categories = {}; %>
+      <% menuItems.forEach(item => { %>
+        <% if (!categories[item.category]) categories[item.category] = []; %>
+        <% categories[item.category].push(item); %>
+      <% }); %>
+      <% const orderedCategories = Object.keys(categories).sort((a, b) => { %>
+      <%   const aPos = categoryOrder.indexOf(a); %>
+      <%   const bPos = categoryOrder.indexOf(b); %>
+      <%   if (aPos === -1 && bPos === -1) return a.localeCompare(b); %>
+      <%   if (aPos === -1) return 1; %>
+      <%   if (bPos === -1) return -1; %>
+      <%   return aPos - bPos; %>
+      <% }); %>
+
+      <% orderedCategories.forEach(category => { %>
+        <section class="mb-4">
+          <h2 class="section-title gradient-text"><%= category %></h2>
+          <div class="menu-grid stagger">
+            <% categories[category].forEach(item => { %>
+              <article class="menu-item">
+                <% if (item.image) { %>
+                  <img src="<%= item.image %>" alt="<%= item.name %>" class="menu-item-media">
+                <% } else { %>
+                  <img src="/images/default-menu.jpg" alt="<%= item.name %>" class="menu-item-media">
+                <% } %>
+
+                <div class="menu-item-body">
+                  <h4 class="menu-item-title"><%= item.name %></h4>
+                  <% if (item.description) { %>
+                    <p class="menu-item-desc"><%= item.description %></p>
+                  <% } else { %>
+                    <p class="menu-item-desc">Freshly prepared and delivered to your room.</p>
+                  <% } %>
+                  <p class="price">&#8377;<%= item.price %></p>
+
+                  <div class="menu-item-footer">
+                    <div class="qty-control">
+                      <label for="qty-<%= item._id %>">Quantity</label>
+                      <input
+                        id="qty-<%= item._id %>"
+                        type="number"
+                        class="quantity-input"
+                        data-id="<%= item._id %>"
+                        data-name="<%= item.name %>"
+                        data-price="<%= item.price %>"
+                        min="0"
+                        max="10"
+                        value="0"
+                      >
+                    </div>
+                    <textarea class="notes-input" data-id="<%= item._id %>" placeholder="Special instructions (optional)" style="display: none;"></textarea>
+                  </div>
+                </div>
+              </article>
+            <% }); %>
+          </div>
+        </section>
+      <% }); %>
+
+      <section class="summary-card fade-in mb-4">
+        <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+        <div id="orderSummary" class="mt-4">
+          <p class="subtitle text-center">No items selected yet</p>
+        </div>
+
+        <div class="admin-header mt-4">
+          <h3>Total: &#8377;<span id="totalAmount">0</span></h3>
+          <button type="submit" id="placeOrderBtn" class="btn btn-secondary" disabled>
+            <i class="fas fa-shopping-cart"></i> Place Order
+          </button>
+        </div>
+      </section>
+
+      <section class="form-card fade-in">
+        <h3><i class="fas fa-sticky-note"></i> Special Instructions</h3>
+        <textarea name="specialInstructions" class="mt-4" placeholder="Allergies, dietary preferences, etc. (optional)"></textarea>
+      </section>
+    </form>
+  </main>
+
+  <script src="/js/ui.js"></script>
+  <script>
+    let cart = [];
+
+    document.querySelectorAll('.quantity-input').forEach((input) => {
+      input.addEventListener('input', updateCart);
+      input.addEventListener('input', function () {
+        const notes = this.closest('.menu-item').querySelector('.notes-input');
+        if (Number(this.value) > 0) {
+          notes.style.display = 'block';
+        } else {
+          notes.style.display = 'none';
+          notes.value = '';
+        }
+      });
+    });
+
+    document.querySelectorAll('.notes-input').forEach((input) => input.addEventListener('input', updateCart));
+
+    function updateCart() {
+      cart = [];
+      let total = 0;
+
+      document.querySelectorAll('.quantity-input').forEach((input) => {
+        const qty = Number(input.value) || 0;
+        if (qty <= 0) return;
+
+        const id = input.dataset.id;
+        const name = input.dataset.name;
+        const price = Number(input.dataset.price) || 0;
+        const notes = input.closest('.menu-item').querySelector('.notes-input').value.trim();
+
+        cart.push({ id, name, price, quantity: qty, notes });
+        total += price * qty;
+      });
+
+      renderSummary(total);
+      document.getElementById('itemsJson').value = JSON.stringify(cart);
+    }
+
+    function renderSummary(total) {
+      const summaryEl = document.getElementById('orderSummary');
+      const totalEl = document.getElementById('totalAmount');
+      const placeBtn = document.getElementById('placeOrderBtn');
+
+      totalEl.textContent = total.toFixed(0);
+
+      if (cart.length === 0) {
+        summaryEl.innerHTML = '<p class="subtitle text-center">No items selected yet</p>';
+        placeBtn.disabled = true;
+        return;
+      }
+
+      const rows = cart.map((item) => `
+        <div class="order-summary-row">
+          <span>${item.quantity}x ${item.name}</span>
+          <strong>&#8377;${(item.price * item.quantity).toFixed(0)}</strong>
+        </div>
+      `).join('');
+
+      summaryEl.innerHTML = `<div class="order-summary-list">${rows}</div>`;
+      placeBtn.disabled = false;
+    }
+  </script>
+</body>
+</html>

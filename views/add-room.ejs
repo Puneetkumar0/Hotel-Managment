@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %> - Admin Panel</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <h2>Hotel Admin Panel</h2>
+    <div class="nav-links">
+      <a href="/admin">Dashboard</a>
+      <a href="/admin/rooms">Manage Rooms</a>
+      <a href="/logout">Logout</a>
+    </div>
+  </nav>
+
+  <div class="form-container">
+    <h2><%= pageTitle %></h2>
+    <form action="/admin/rooms/add" method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="roomNumber">Room Number</label>
+        <input type="text" id="roomNumber" name="roomNumber" placeholder="e.g., 101" required>
+      </div>
+      <div class="form-group">
+        <label for="type">Room Type</label>
+        <select id="type" name="type" required>
+          <option value="Single">Single</option>
+          <option value="Double">Double</option>
+          <option value="Suite">Suite</option>
+          <option value="Duplex">Duplex</option>
+          <option value="AC">AC</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="price">Price per day (₹)</label>
+        <input type="number" id="price" name="price" required>
+      </div>
+      <div class="form-group">
+        <label for="capacity">Capacity (Guests)</label>
+        <input type="number" id="capacity" name="capacity" required>
+      </div>
+      <div class="form-group">
+        <label for="amenities">Amenities (comma-separated)</label>
+        <input type="text" id="amenities" name="amenities" placeholder="e.g., Wifi, TV, AC">
+      </div>
+      <div class="form-group">
+        <label for="image">Room Image</label>
+        <input type="file" id="image" name="image" accept="image/*">
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="3"></textarea>
+      </div>
+      <button type="submit" class="book-btn">Add Room</button>
+    </form>
+  </div>
+</body>
+</html>
